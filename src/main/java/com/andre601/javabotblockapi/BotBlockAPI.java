@@ -111,7 +111,7 @@ public class BotBlockAPI{
     /**
      * Builder class to create an instance of {@link com.andre601.javabotblockapi.BotBlockAPI BotBlockAPI}
      */
-    public class Builder{
+    public static class Builder{
         private Map<String, String> authTokens = new HashMap<>();
 
         private int updateInterval = 30;
