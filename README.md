@@ -5,11 +5,16 @@
 
 [Wiki]: https://github.com/Andre601/JavaBotBlockAPI/wiki
 
+[BadgeDownload]: https://api.bintray.com/packages/andre601/maven/JavaBotBlockAPI/images/download.svg
+[Download]: https://bintray.com/andre601/maven/JavaBotBlockAPI/_latestVersion
+
 # JavaBotBlockAPI
 JavaBotBlockAPI is a continued and updated Java Wrapper for [BotBlock], a website that makes it possible to update guild counts on multiple lists with one API.  
 This wrapper is a fork of [BotBlock4J] and was updated and improved to make it as userfriendly as possible.
 
 ## Installation
+[![BadgeDownload]][Download]
+
 You can install JavaBotBlockAPI through the following methods.  
 Make sure to replace `{version}` with the above shown version.
 
