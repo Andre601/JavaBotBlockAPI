@@ -131,7 +131,7 @@ Thrown when BotBlock.org sends an empty response, meaning something got messed u
 
 ## Links
 Here are some useful links:
-- [BotBlock.org] Site for which this wrapper was made.
+- [BotBlock.org][BotBlock] Site for which this wrapper was made.
   - [API] API documentation.
 - [Wiki] Contains additional information on how you can use JavaBotBlockAPI.
 - [BotBlock4J] Original Wrapper from which this one originates.
