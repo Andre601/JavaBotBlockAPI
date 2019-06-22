@@ -236,7 +236,12 @@ public class BotBlockAPI{
          * <p>You can as an alternative define JDA directly through the constructor.
          *
          * <p><b>Example:</b>
-         * <br>{@code BotBlockAPI api = new BotBlockAPI.Builder(Message#getJDA()).build()}
+         * <pre><code>
+         * JDA jda = // Getting the JDA from somewhere
+         *
+         * BotBlockAPI api = new BotBlockAPI.Builder(jda) // Setting the JDA
+         *     // Adding sites through addAuthToken(String, String) and the build it with build()
+         * </code></pre>
          *
          * @param  jda
          *         The instance of {@link net.dv8tion.jda.core.JDA JDA} to use. May not be null.

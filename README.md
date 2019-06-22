@@ -22,7 +22,7 @@ Make sure to replace `{version}` with the above shown version.
 Put this code into your `build.gradle`:  
 ```gradle
 repositories{
-    jcenter()
+    maven { url = 'https://dl.bintray.com/andre601/maven' }
 }
 
 dependencies{
@@ -36,7 +36,7 @@ For maven use this code snipped:
 <repositories>
   <repository>
     <id>jcenter</id>
-    <url>https://jcenter.bintray.com</url>
+    <url>https://dl.bintray.com/andre601/maven</url>
   </repository>
 </repositories>
 
@@ -108,7 +108,7 @@ For that simply use `Request#stopAutoPosting();`. Here is another example:
 handler.stopAutoPosting();
 ```
 
-Note thet the delay in which you post to the API is defined through the BotBlockAPI.  
+Note that the delay in which you post to the API is defined through the BotBlockAPI.
 Use `BotBlockAPI.Builder#setUpdateInterval(Integer)` to define a delay. It is counted in minutes and default is 30.
 
 #### Manual posting
