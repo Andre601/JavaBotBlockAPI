@@ -3,6 +3,7 @@ plugins{
     id 'java-library'
     id 'idea'
     id 'maven-publish'
+    id 'maven'
 }
 
 group = 'com.andre601'
@@ -63,12 +64,12 @@ bintray{
 publishing{
     publications{
         JavaBotBlockAPIRelease(MavenPublication){
-            from = components.java
-            groupId = group
-            artifactId = archivesBaseName
-            version = version
-            artifact = javadocJar
-            artifact = sourcesJar
+            from components.java
+            groupId group
+            artifactId archivesBaseName
+            version version
+            artifact javadocJar
+            artifact sourcesJar
         }
     }
 }
