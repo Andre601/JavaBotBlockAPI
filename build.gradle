@@ -45,6 +45,8 @@ artifacts{
 }
 
 bintray{
+    user = property('user')
+    key = property('key')
     publications = ['JavaBotBlockAPIRelease']
     pkg{
         repo = 'maven'
