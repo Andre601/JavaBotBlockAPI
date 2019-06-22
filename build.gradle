@@ -46,8 +46,8 @@ artifacts{
 }
 
 bintray{
-    user = System.getenv('BintrayUser')
-    key = System.getenv('BintrayKey')
+    user = bintrayUser
+    key = bintrayApiKey
     publications = ['JavaBotBlockAPIRelease']
     pkg{
         repo = 'maven'
