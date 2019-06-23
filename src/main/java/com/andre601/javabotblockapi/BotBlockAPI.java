@@ -111,16 +111,16 @@ public class BotBlockAPI{
          * <br>You don't need to set this when not using the auto-post option. Default is 30.
          *
          * @param  updateInterval
-         *         The update interval in minutes that should be used. This can't be less than 1.
+         *         The update interval in minutes that should be used. This can't be less than 2.
          *
          * @throws IllegalArgumentException
-         *         When the updateInterval is less than 1.
+         *         When the updateInterval is less than 2.
          *
          * @return The Builder after the updateInterval was set. Useful for chaining.
          */
         public Builder setUpdateInteval(int updateInterval){
-            if(updateInterval < 1)
-                throw new IllegalArgumentException("updateInterval can't be less than 1!");
+            if(updateInterval < 2)
+                throw new IllegalArgumentException("updateInterval can't be less than 2!");
 
             this.updateInterval = updateInterval;
 

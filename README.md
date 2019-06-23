@@ -73,10 +73,10 @@ BotBlockAPI api = new BotBlockAPI.Builder()
 There are a lot of other methods that you can use. Head over to the [Wiki] for more information.
 
 ### Posting
-You can post the guilds eithe automatically or manually depending on your own preferences.
+You can post the guilds either automatically or manually depending on your own preferences.
 
 #### Auto-posting
-JavaBotBlockAPI comes with an inbuild scheduler to post yout guilds automatically.  
+JavaBotBlockAPI comes with an inbuilt scheduler to post your guilds automatically.
 To use it simply use the `startAutoPosting` method and provide either a JDA instance, ShardManager instance or the bot id and guild count.
 
 **Example**:  

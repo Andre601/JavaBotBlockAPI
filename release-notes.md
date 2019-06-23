@@ -1,3 +1,6 @@
+## v1.0.5
+- Updated minimal delay to 2 since ratelimit is 1/120s.
+
 ## v1.0.4
 - RequestHandler now no longer allows values in itself. Instead you provide them through the postGuilds  or startAutoPosting methods.
 
