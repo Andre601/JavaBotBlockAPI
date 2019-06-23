@@ -72,48 +72,36 @@ BotBlockAPI api = new BotBlockAPI.Builder()
 #### Notes
 There are a lot of other methods that you can use. Head over to the [Wiki] for more information.
 
-### Creating a RequestHandler instance
-The next step after creating an instance of the BotBlockAPI is to create an instance of the Request Handler.  
-The RequestHandler is the main class for performing the post action. It allows you to post guild counts either automatically or manual.
-
-You need to provide either JDA, ShardManager or the bots id and guild count.  
-The example here shows the option with JDA, but like I said can you also use ShardManager or manually add ID and guilds.  
-```java
-// We previously created a BotBlockAPI instance called api which we now use here.
-RequestHandler handler = new RequestHandler(jda, api);
-```
-
-### Posting the guild counts
-This step depends on what You previously set for the RequestHandler since some methods are only available for certain cases.
-
-**All methods require BotBlockAPI to be setup, meaning you have to AT LEAST add one site and token!**
+### Posting
+You can post the guilds eithe automatically or manually depending on your own preferences.
 
 #### Auto-posting
-The Wrapper comes with an inbuilt auto-post that allows you to easily post the guild counts without worrying too much.  
-However, this method is limited to JDA and ShardManager only so you have to define them for using this.
+JavaBotBlockAPI comes with an inbuild scheduler to post yout guilds automatically.
+To use it simply use the `startAutoPosting` method and provide either a JDA instance, ShardManager instance or the bot id and guild count.
 
-To auto-post guild counts you just need to call `RequestHandler#startAutoPosting();`.  
-This would look like this:  
+**Example**:
 ```java
-// We previously defined a RequestHandler called handler
-handler.startAutoPosting();
+// We need to get an instance of RequestHandler to use the methods.
+RequestHandler handler = new RequestHandler();
+
+// jda is a JDA instance and api a BotBlockAPI instance.
+handler.startAutoPosting(jda, api);
 ```
 
-Easy right? But what if you want to stop the auto-posting?  
-For that simply use `Request#stopAutoPosting();`. Here is another example:  
-```java
-// We previously defined a RequestHandler called handler
+But what if you want to stop it?
+For that just call the `stopAutoPosting` method:
+```
 handler.stopAutoPosting();
 ```
 
-Note that the delay in which you post to the API is defined through the BotBlockAPI.
-Use `BotBlockAPI.Builder#setUpdateInterval(Integer)` to define a delay. It is counted in minutes and default is 30.
-
 #### Manual posting
-If you want to post the guild counts manually you can use the following method:  
+If you want to post the guild counts manually you can use the `postGuilds` method.
 ```java
-// We previously defined a RequestHandler called handler
-handler.postGuilds();
+// We need to get an instance of RequestHandler to use the methods.
+RequestHandler handler = new RequestHandler();
+
+// jda is a JDA instance and api a BotBlockAPI instance.
+handler.postGuilds(jda, api);
 ```
 
 ### Exceptions
