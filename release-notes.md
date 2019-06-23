@@ -1,3 +1,6 @@
+## v1.0.4
+- RequestHandler now no longer allows values in itself. Instead you provide them through the postGuilds  or startAutoPosting methods.
+
 ## v1.0.3
 - Attempt to fix JSONException for when BotBlock.org has no `failure` object.
 
