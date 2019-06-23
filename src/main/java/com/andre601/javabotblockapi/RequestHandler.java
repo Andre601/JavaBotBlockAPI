@@ -216,22 +216,22 @@ public class RequestHandler {
                 ));
             }
 
-            JSONObject responseJson = new JSONObject(response.body());
-            if(!responseJson.get("failure").equals("[]")){
-                JSONObject failures = responseJson.getJSONObject("failure");
+            JSONObject json = new JSONObject(response.body());
+            if(json.has("failure")){
+                JSONObject failure = json.getJSONObject("failure");
 
                 List<String> sites = new ArrayList<>();
-                for(String key : failures.keySet()){
+                for (String key : failure.keySet()) {
                     try {
-                        JSONArray array = failures.getJSONArray(key);
+                        JSONArray array = failure.getJSONArray(key);
                         sites.add(String.format(
                                 "Name: %s, Error code: %d, Error Message: %s",
                                 key,
                                 array.getInt(0),
                                 array.getString(1)
                         ));
-                    }catch(JSONException ex){
-                        Map<String, Object> notFound = failures.toMap();
+                    } catch (JSONException ex) {
+                        Map<String, Object> notFound = failure.toMap();
                         sites.add("Errors: " + notFound.toString());
                     }
                 }
