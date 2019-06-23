@@ -63,32 +63,30 @@ This class is the center of everything, including on what sites you want to post
 You can use the internal Builder class of BotBlockAPI to create an instance. It would look something like this:  
 ```java
 // Creating an instance of BotBlockAPI using BotBlockAPI.Builder
-BotBlockAPI api = new BotBlockAPI.Builder(jda) // We can provide either a instance of JDA or ShardManager
+BotBlockAPI api = new BotBlockAPI.Builder()
     .addAuthToken("lbots.org", "MySecretToken123") // Adds a site with the corresponding API token.
     .addAuthToken("botlist.space", "MySecretToken456") // The builder allows chaining of the methods.
     .build();
 ```
 
 #### Notes
-`new BotBlockAPI.Builder()` allows you to provide either a JDA instance, a ShardManager instance or none at all.  
-You can define a JDA or ShardManager instance at a later point with `.setJDA(JDA)` or `.setShardManager(ShardManager)` respectively.
-
-Also note that when you don't provide any instance, that you have to use `disableJDA(true)` or else you'll receive an NullPointerException.  
-There are also a lot of other methods that you can use. Head over to the [Wiki] for more information.
+There are a lot of other methods that you can use. Head over to the [Wiki] for more information.
 
 ### Creating a RequestHandler instance
-The next step after creating an instance of the BotBlockAPI is to create an instance of the Request Handler.
+The next step after creating an instance of the BotBlockAPI is to create an instance of the Request Handler.  
+The RequestHandler is the main class for performing the post action. It allows you to post guild counts either automatically or manual.
 
-This example shows the easiest one to use, but there are much more ways you can set it. Check the [Wiki] for examples.  
+You need to provide either JDA, ShardManager or the bots id and guild count.  
+The example here shows the option with JDA, but like I said can you also use ShardManager or manually add ID and guilds.  
 ```java
 // We previously created a BotBlockAPI instance called api which we now use here.
-RequestHandler handler = new RequestHandler(api);
+RequestHandler handler = new RequestHandler(jda, api);
 ```
 
 ### Posting the guild counts
-This step depends on what You previously set for the BotBlockAPI and the RequestHandler since some methods are only available for certain cases.
+This step depends on what You previously set for the RequestHandler since some methods are only available for certain cases.
 
-**All methods require BotBlockAPI to be setup, meaning you have AT LEAST added one site and token!**
+**All methods require BotBlockAPI to be setup, meaning you have to AT LEAST add one site and token!**
 
 #### Auto-posting
 The Wrapper comes with an inbuilt auto-post that allows you to easily post the guild counts without worrying too much.  
