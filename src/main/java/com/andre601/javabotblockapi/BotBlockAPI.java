@@ -18,8 +18,6 @@
  */
 package com.andre601.javabotblockapi;
 
-import net.dv8tion.jda.bot.sharding.ShardManager;
-import net.dv8tion.jda.core.JDA;
 import org.apache.commons.lang3.ObjectUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,12 +25,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BotBlockAPI{
-    private Map<String, String> authTokens = new HashMap<>();
-
+    private Map<String, String> authTokens;
     private int updateInterval;
-    private boolean jdaDisabled;
-    private JDA jda;
-    private ShardManager shardManager;
 
     /**
      * Creates an instance of BotBlockAPI with the provided api tokens (as Map) and update interval.
@@ -45,63 +39,10 @@ public class BotBlockAPI{
     public BotBlockAPI(@NotNull Map<String, String> authTokens, int updateInterval){
         this.authTokens = authTokens;
         this.updateInterval = updateInterval;
-        this.jdaDisabled = true;
-        this.jda = null;
-        this.shardManager = null;
-    }
-
-    /**
-     * Creates an instance of BotBlockAPI with the provided api tokens (as Map), update interval and
-     * {@link net.dv8tion.jda.core.JDA JDA instance}.
-     *
-     * @param authTokens
-     *        A Map of sites and their tokens. May not be null.
-     * @param updateInterval
-     *        The update interval to set.
-     * @param jda
-     *        An instance of {@link net.dv8tion.jda.core.JDA JDA}. May not be null.
-     */
-    public BotBlockAPI(@NotNull Map<String, String> authTokens, int updateInterval, @NotNull JDA jda){
-        this.authTokens = authTokens;
-        this.updateInterval = updateInterval;
-        this.jdaDisabled = false;
-        this.jda = jda;
-        this.shardManager = null;
-    }
-
-    /**
-     * Creates an instance of BotBlockAPI with the provided api tokens (as Map), update interval and
-     * {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager instance}.
-     *
-     * @param authTokens
-     *        A Map of sites and their tokens. May not be null.
-     * @param updateInterval
-     *        The update interval to set.
-     * @param shardManager
-     *        An instance of {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager}.
-     */
-    public BotBlockAPI(@NotNull Map<String, String> authTokens, int updateInterval, @NotNull ShardManager shardManager){
-        this.authTokens = authTokens;
-        this.updateInterval = updateInterval;
-        this.jdaDisabled = false;
-        this.jda = null;
-        this.shardManager = shardManager;
     }
 
     Map<String, String> getAuthTokens(){
         return authTokens;
-    }
-
-    boolean isJdaDisabled(){
-        return jdaDisabled;
-    }
-
-    JDA getJDA(){
-        return jda;
-    }
-
-    ShardManager getShardManager(){
-        return shardManager;
     }
 
     int getUpdateInterval(){
@@ -113,36 +54,12 @@ public class BotBlockAPI{
      */
     public static class Builder{
         private Map<String, String> authTokens = new HashMap<>();
-
         private int updateInterval = 30;
-        private boolean jdaDisabled = false;
-        private JDA jda = null;
-        private ShardManager shardManager = null;
 
         /**
          * Empty Builder class
          */
         public Builder(){}
-
-        /**
-         * Constructor that also sets the {@link net.dv8tion.jda.core.JDA JDA instance}.
-         *
-         * @param jda
-         *        The instance of {@link net.dv8tion.jda.core.JDA JDA}.
-         */
-        public Builder(JDA jda){
-            this.jda = jda;
-        }
-
-        /**
-         * Constructor that also sets the {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager instance}.
-         *
-         * @param shardManager
-         *        The instance of {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager}.
-         */
-        public Builder(ShardManager shardManager){
-            this.shardManager = shardManager;
-        }
 
         /**
          * Adds the provided Site name and token to the Map.
@@ -211,99 +128,12 @@ public class BotBlockAPI{
         }
 
         /**
-         * Sets if an instance of {@link net.dv8tion.jda.core.JDA JDA} or {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager}
-         * need to be set.
-         * <br>{@code true} means that it is *NOT* required to set. Default is false.
-         *
-         * <p><b>This will be ignored when either {@link #setJDA(JDA)} or {@link #setShardManager(ShardManager)} are set!</b>
-         *
-         * @param  disable
-         *         The boolean to set if JDA/ShardManager is required. True means it's *NOT* required.
-         *
-         * @return The Builder after the boolean was set. Useful for chaining.
-         */
-        public Builder disableJDA(boolean disable){
-            this.jdaDisabled = disable;
-
-            return this;
-        }
-
-        /**
-         * Sets the instance of {@link net.dv8tion.jda.core.JDA JDA}. This will be ignored when {@link #setShardManager(ShardManager)}
-         * is used!
-         * <br>It will also disable {@link #disableJDA(boolean)} (set it to false) when it was set.
-         *
-         * <p>You can as an alternative define JDA directly through the constructor.
-         *
-         * <p><b>Example:</b>
-         * <pre><code>
-         * JDA jda = // Getting the JDA from somewhere
-         *
-         * BotBlockAPI api = new BotBlockAPI.Builder(jda) // Setting the JDA
-         *     // Adding sites through addAuthToken(String, String) and the build it with build()
-         * </code></pre>
-         *
-         * @param  jda
-         *         The instance of {@link net.dv8tion.jda.core.JDA JDA} to use. May not be null.
-         *
-         * @return The Builder after JDA was set. Useful for chaining.
-         */
-        public Builder setJDA(@NotNull JDA jda){
-            if(jdaDisabled)
-                jdaDisabled = false;
-
-            this.jda = jda;
-
-            return this;
-        }
-
-        /**
-         * Sets the instance of {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager}.
-         * <br>This will disable {@link #disableJDA(boolean)} (set it to false) when it was set.
-         *
-         * <p>You can as an alternative define ShardManager directly through the constructor.
-         *
-         * <p><b>Example:</b>
-         * <pre><code>
-         * ShardManager shardManager = // Getting the ShardManager from somewhere
-         *
-         * BotBlockAPI api = new BotBlockAPI.Builder(shardManager) // Setting the ShardManager.
-         *     // Adding sites through addAuthToken(String, String) and the build it with build()
-         * </code></pre>
-         *
-         * @param  shardManager
-         *         The instance of {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} to use. May not be null.
-         *
-         * @return The Builder after ShardManager was set. Useful for chaining.
-         */
-        public Builder setShardManager(@NotNull ShardManager shardManager){
-            if(jdaDisabled)
-                jdaDisabled = false;
-
-            this.shardManager = shardManager;
-
-            return this;
-        }
-
-        /**
          * Builds the instance of {@link com.andre601.javabotblockapi.BotBlockAPI BotBlockAPI}.
-         *
-         * @throws NullPointerException
-         *         When JDA nor ShardManager are set (null) and {@link #disableJDA(boolean)} is false.
          *
          * @return The built, usable {@link com.andre601.javabotblockapi.BotBlockAPI BotBlockAPI}.
          */
         public BotBlockAPI build(){
-            if(shardManager != null)
-                return new BotBlockAPI(authTokens, updateInterval, shardManager);
-            else
-            if(jda != null)
-                return new BotBlockAPI(authTokens, updateInterval, jda);
-            else
-            if(jdaDisabled)
-                return new BotBlockAPI(authTokens, updateInterval);
-            else
-                throw new NullPointerException("disableJDA(Boolean) is false and JDA as-well as ShardManager are null!");
+            return new BotBlockAPI(authTokens, updateInterval);
         }
     }
 }

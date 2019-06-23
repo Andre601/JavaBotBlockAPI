@@ -28,13 +28,11 @@ import okhttp3.Response;
 import org.apache.commons.lang3.ObjectUtils;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -49,24 +47,6 @@ public class RequestHandler {
     private BotBlockAPI botBlockAPI;
 
     private JSONObject json = new JSONObject();
-
-    /**
-     * Creates an instance of this class and sets the values defined in {@link com.andre601.javabotblockapi.BotBlockAPI BotBlockAPI}.
-     * <br>This can only be used when you set either a ShardManager or a JDA instance through their respective method.
-     *
-     * @param botBlockAPI
-     *        An instance of {@link com.andre601.javabotblockapi.BotBlockAPI BotBlockAPI}. Can't be null.
-     */
-    public RequestHandler(@NotNull BotBlockAPI botBlockAPI){
-        if(botBlockAPI.getShardManager() != null){
-            new RequestHandler(botBlockAPI.getShardManager(), botBlockAPI);
-        }else
-        if(botBlockAPI.getJDA() != null){
-            new RequestHandler(botBlockAPI.getJDA(), botBlockAPI);
-        }else{
-            throw new NullPointerException("You need to set a JDA or ShardManager instance with BotBlockAPI!");
-        }
-    }
 
     /**
      * Creates an instance of this class and sets the {@link net.dv8tion.jda.core.JDA JDA instance} and
@@ -116,7 +96,7 @@ public class RequestHandler {
 
         List<Integer> shards = new ArrayList<>();
         for(JDA jda : shardManager.getShards())
-            shards.add((int)jda.getGuildCache().size());
+            shards.add(jda.getGuilds().size());
 
         json.put("shards", new JSONArray(Arrays.deepToString(shards.toArray())));
 
@@ -146,7 +126,6 @@ public class RequestHandler {
     /**
      * Creates an instance of this class and sets the bots ID, the guild count and the
      * {@link com.andre601.javabotblockapi.BotBlockAPI BotBlockAPI}.
-     * <br>This is essentially a shortcut to {@link #RequestHandler(String, int, BotBlockAPI)}.
      *
      * @param botId
      *        The ID of the bot. Can't be null.
@@ -185,17 +164,15 @@ public class RequestHandler {
     /**
      * Starts a scheduler to auto-post the guild counts to the BotBlock API.
      *
-     * @throws IllegalStateException
-     *         When {@link com.andre601.javabotblockapi.BotBlockAPI.Builder#disableJDA(boolean) BotBlockAPI.Builder#disableJDA(Boolean)}
-     *         is true.
      * @throws NullPointerException
-     *         When {@link com.andre601.javabotblockapi.BotBlockAPI BotBlockAPI} is null.
+     *         When {@link com.andre601.javabotblockapi.BotBlockAPI BotBlockAPI} is null or both
+     *         {@link net.dv8tion.jda.core.JDA JDA} and {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} are null.
      */
     public void startAutoPosting(){
         Objects.requireNonNull(botBlockAPI, "BotBlockAPI may not be null.");
 
-        if(botBlockAPI.isJdaDisabled())
-            throw new IllegalStateException("startAutoPosting can't be used while disableJDA(Boolean) is true!");
+        if(!ObjectUtils.anyNotNull(jda, shardManager))
+            throw new NullPointerException("startAutoPost() requires either JDA or ShardManager!");
 
         scheduler.scheduleAtFixedRate(() -> {
             try {
@@ -216,9 +193,6 @@ public class RequestHandler {
     private void performRequest() throws IOException, RatelimitedException{
         Objects.requireNonNull(json, "JSON may not be null.");
         Objects.requireNonNull(id, "Id may not be null.");
-
-        if(!ObjectUtils.anyNotNull(jda, shardManager) && !botBlockAPI.isJdaDisabled())
-            throw new NullPointerException("ShardManager AND JDA can't be null! Either set one or use disableJDA(true).");
 
         RequestBody body = RequestBody.create(null, json.toString());
         Request request = new Request.Builder()
@@ -248,13 +222,18 @@ public class RequestHandler {
 
                 List<String> sites = new ArrayList<>();
                 for(String key : failures.keySet()){
-                    JSONArray array = failures.getJSONArray(key);
-                    sites.add(String.format(
-                            "Name: %s, Error code: %d, Error Message: %s",
-                            key,
-                            array.getInt(0),
-                            array.getString(1)
-                    ));
+                    try {
+                        JSONArray array = failures.getJSONArray(key);
+                        sites.add(String.format(
+                                "Name: %s, Error code: %d, Error Message: %s",
+                                key,
+                                array.getInt(0),
+                                array.getString(1)
+                        ));
+                    }catch(JSONException ex){
+                        Map<String, Object> notFound = failures.toMap();
+                        sites.add("Errors: " + notFound.toString());
+                    }
                 }
 
                 throw new IOException(String.format(
