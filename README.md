@@ -76,10 +76,10 @@ There are a lot of other methods that you can use. Head over to the [Wiki] for m
 You can post the guilds eithe automatically or manually depending on your own preferences.
 
 #### Auto-posting
-JavaBotBlockAPI comes with an inbuild scheduler to post yout guilds automatically.
+JavaBotBlockAPI comes with an inbuild scheduler to post yout guilds automatically.  
 To use it simply use the `startAutoPosting` method and provide either a JDA instance, ShardManager instance or the bot id and guild count.
 
-**Example**:
+**Example**:  
 ```java
 // We need to get an instance of RequestHandler to use the methods.
 RequestHandler handler = new RequestHandler();
@@ -88,14 +88,14 @@ RequestHandler handler = new RequestHandler();
 handler.startAutoPosting(jda, api);
 ```
 
-But what if you want to stop it?
-For that just call the `stopAutoPosting` method:
+But what if you want to stop it?  
+For that just call the `stopAutoPosting` method:  
 ```
 handler.stopAutoPosting();
 ```
 
 #### Manual posting
-If you want to post the guild counts manually you can use the `postGuilds` method.
+If you want to post the guild counts manually you can use the `postGuilds` method.  
 ```java
 // We need to get an instance of RequestHandler to use the methods.
 RequestHandler handler = new RequestHandler();
