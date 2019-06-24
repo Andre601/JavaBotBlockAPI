@@ -24,6 +24,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Class for handling the sites to post to and the delay for the auto-post option in
+ * {@link com.andre601.javabotblockapi.RequestHandler RequestHandler}.
+ */
 public class BotBlockAPI{
     private Map<String, String> authTokens;
     private int updateInterval;
@@ -57,7 +61,7 @@ public class BotBlockAPI{
         private int updateInterval = 30;
 
         /**
-         * Empty Builder class
+         * Empty constructor to get the class.
          */
         public Builder(){}
 

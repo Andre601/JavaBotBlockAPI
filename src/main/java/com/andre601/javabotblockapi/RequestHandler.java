@@ -25,7 +25,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import org.apache.commons.lang3.ObjectUtils;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,6 +36,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Class to handle post-requests to the <a href="https://botblock.org" target="_blank">BotBlock API</a>.
+ */
 public class RequestHandler {
     private ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
     private final OkHttpClient CLIENT = new OkHttpClient();
@@ -45,6 +47,9 @@ public class RequestHandler {
 
     private JSONObject json = new JSONObject();
 
+    /**
+     * Empty constructor to get the class.
+     */
     public RequestHandler(){}
 
     /**
@@ -60,7 +65,7 @@ public class RequestHandler {
      * @throws RatelimitedException
      *         When the Bot (IP or ID) got ratelimited.
      *
-     * @see #postGuilds(JDA, BotBlockAPI) for posting with JDA.
+     * @see #postGuilds(JDA, BotBlockAPI) postGuilds(JDA, BotBlockAPI) for posting with JDA.
      */
     public void postGuilds(@NotNull ShardManager shardManager, @NotNull BotBlockAPI botBlockAPI) throws IOException, RatelimitedException{
         this.id = shardManager.getShardById(0).getSelfUser().getId();
@@ -96,7 +101,7 @@ public class RequestHandler {
      * @throws RatelimitedException
      *         When the Bot (IP or ID) got ratelimited.
      *
-     * @see #postGuilds(ShardManager, BotBlockAPI) for posting with ShardManager.
+     * @see #postGuilds(ShardManager, BotBlockAPI) postGuilds(ShardManager, BotBlockAPI) for posting with ShardManager.
      */
     public void postGuilds(@NotNull JDA jda, @NotNull BotBlockAPI botBlockAPI) throws IOException, RatelimitedException{
         this.id = jda.getSelfUser().getId();
@@ -129,7 +134,9 @@ public class RequestHandler {
      * @throws RatelimitedException
      *         When the Bot (IP or ID) got ratelimited.
      *
-     * @see #postGuilds(String, int, BotBlockAPI) for the full method.
+     * @see #postGuilds(String, int, BotBlockAPI) postGuilds(String, int, BotBlockAPI) for the full method.
+     * @see #postGuilds(ShardManager, BotBlockAPI) postGuilds(ShardManager, BotBlockAPI) for posting with ShardManager.
+     * @see #postGuilds(JDA, BotBlockAPI) postGuilds(JDA, BotBlockAPI) for posting with JDA.
      */
     public void postGuilds(Long botId, int guilds, @NotNull BotBlockAPI botBlockAPI) throws IOException, RatelimitedException{
         postGuilds(Long.toString(botId), guilds, botBlockAPI);
@@ -149,6 +156,9 @@ public class RequestHandler {
      *         When the post request couldn't be performed properly.
      * @throws RatelimitedException
      *         When the Bot (IP or ID) got ratelimited.
+     *
+     * @see #postGuilds(ShardManager, BotBlockAPI) postGuilds(ShardManager, BotBlockAPI) for posting with ShardManager.
+     * @see #postGuilds(JDA, BotBlockAPI) postGuilds(JDA, BotBlockAPI) for posting with JDA.
      */
     public void postGuilds(@NotNull String botId, int guilds, @NotNull BotBlockAPI botBlockAPI) throws IOException, RatelimitedException{
         json.put("server_count", guilds)
@@ -167,6 +177,8 @@ public class RequestHandler {
      *         The {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager instance} that should be used.
      * @param  botBlockAPI
      *         The {@link com.andre601.javabotblockapi.BotBlockAPI BotBlockAPI instance} that should be used.
+     *
+     * @see #startAutoPosting(JDA, BotBlockAPI) startAutoPosting(JDA, BotBlockAPI) for posting with JDA.
      */
     public void startAutoPosting(@NotNull ShardManager shardManager, @NotNull BotBlockAPI botBlockAPI){
         scheduler.scheduleAtFixedRate(() -> {
@@ -186,6 +198,8 @@ public class RequestHandler {
      *         The {@link net.dv8tion.jda.core.JDA JDA instance} that should be used.
      * @param  botBlockAPI
      *         The {@link com.andre601.javabotblockapi.BotBlockAPI BotBlockAPI instance} that should be used.
+     *
+     * @see #startAutoPosting(ShardManager, BotBlockAPI) startAutoPosting(ShardManager, BotBlockAPI) for posting with ShardManager.
      */
     public void startAutoPosting(@NotNull JDA jda, @NotNull BotBlockAPI botBlockAPI){
         scheduler.scheduleAtFixedRate(() -> {
@@ -206,6 +220,9 @@ public class RequestHandler {
      *         The guilds the bot is in.
      * @param  botBlockAPI
      *         The {@link com.andre601.javabotblockapi.BotBlockAPI BotBlockAPI instance} that should be used.
+     *
+     * @see #startAutoPosting(JDA, BotBlockAPI) startAutoPosting(JDA, BotBlockAPI) for posting with JDA.
+     * @see #startAutoPosting(ShardManager, BotBlockAPI) startAutoPosting(ShardManager, BotBlockAPI) for posting with ShardManager.
      */
     public void startAutoPosting(Long botId, int guilds, @NotNull BotBlockAPI botBlockAPI){
         scheduler.scheduleAtFixedRate(() -> {
@@ -226,6 +243,9 @@ public class RequestHandler {
      *         The guilds the bot is in.
      * @param  botBlockAPI
      *         The {@link com.andre601.javabotblockapi.BotBlockAPI BotBlockAPI instance} that should be used.
+     *
+     * @see #startAutoPosting(JDA, BotBlockAPI) startAutoPosting(JDA, BotBlockAPI) for posting with JDA.
+     * @see #startAutoPosting(ShardManager, BotBlockAPI) startAutoPosting(ShardManager, BotBlockAPI) for posting with ShardManager.
      */
     public void startAutoPosting(@NotNull String botId, int guilds, @NotNull BotBlockAPI botBlockAPI){
         scheduler.scheduleAtFixedRate(() -> {

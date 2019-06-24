@@ -20,6 +20,9 @@ package com.andre601.javabotblockapi.exceptions;
 
 import org.json.JSONObject;
 
+/**
+ * Used when the Wrapper gets ratelimited by the BotBlockAPI.
+ */
 public class RatelimitedException extends Throwable{
     private int delay;
     private String bot_id;
@@ -35,6 +38,11 @@ public class RatelimitedException extends Throwable{
         this.route = json.getString("ratelimit_route");
     }
 
+    /**
+     * Gives the exception message.
+     *
+     * @return The Exception message with route, IP, ID and when you can send again.
+     */
     @Override
     public String getMessage(){
         return String.format(
