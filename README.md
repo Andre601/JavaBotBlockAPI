@@ -23,7 +23,7 @@ Make sure to replace `{version}` with the above shown version.
 Put this code into your `build.gradle`:  
 ```gradle
 repositories{
-    maven { url = 'https://dl.bintray.com/andre601/maven' }
+    jcenter()
 }
 
 dependencies{
@@ -34,13 +34,6 @@ dependencies{
 ### Maven
 For maven use this code snipped:  
 ```xml
-<repositories>
-  <repository>
-    <id>jcenter</id>
-    <url>https://dl.bintray.com/andre601/maven</url>
-  </repository>
-</repositories>
-
 <dependencies>
   <dependency>
     <groupId>com.andre601</groupId>
