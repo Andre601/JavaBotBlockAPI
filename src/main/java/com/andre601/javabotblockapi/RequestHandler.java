@@ -19,12 +19,13 @@
 package com.andre601.javabotblockapi;
 
 import com.andre601.javabotblockapi.exceptions.RatelimitedException;
-import net.dv8tion.jda.bot.sharding.ShardManager;
-import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.api.sharding.ShardManager;
+import net.dv8tion.jda.api.JDA;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import org.apache.commons.lang3.ObjectUtils;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,10 +54,10 @@ public class RequestHandler {
     public RequestHandler(){}
 
     /**
-     * Posts guilds from the provided {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager}.
+     * Posts guilds from the provided {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager}.
      *
      * @param  shardManager
-     *         The {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager instance} that should be used.
+     *         The {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager instance} that should be used.
      * @param  botBlockAPI
      *         The {@link com.andre601.javabotblockapi.BotBlockAPI BotBlockAPI instance} that should be used.
      *
@@ -64,11 +65,13 @@ public class RequestHandler {
      *         When the post request couldn't be performed properly.
      * @throws RatelimitedException
      *         When the Bot (IP or ID) got ratelimited.
+     * @throws NullPointerException
+     *         When the ShardManager gives an invalid shard (Shard id 0 is null).
      *
      * @see #postGuilds(JDA, BotBlockAPI) postGuilds(JDA, BotBlockAPI) for posting with JDA.
      */
     public void postGuilds(@NotNull ShardManager shardManager, @NotNull BotBlockAPI botBlockAPI) throws IOException, RatelimitedException{
-        this.id = shardManager.getShardById(0).getSelfUser().getId();
+        this.id = Objects.requireNonNull(shardManager.getShardById(0), "The provided ShardManager had an invalid Shard ID.").getSelfUser().getId();
 
         json.put("server_count", shardManager.getGuilds().size())
                 .put("bot_id", id)
@@ -82,17 +85,18 @@ public class RequestHandler {
 
         botBlockAPI.getAuthTokens().forEach(json::put);
 
-        performRequest();
+        postRequest();
     }
 
     /**
-     * Posts the guilds from the provided {@link net.dv8tion.jda.core.JDA JDA}.
-     * <br>If the Bot is sharded (JDA has ShardInfo) then the {@code shard_id} and {@code shard_count} are posted too.
+     * Posts the guilds from the provided {@link net.dv8tion.jda.api.JDA JDA}.
+     * <br>If the bot is part of sharding and the shard count is bigger than 1, then {@code shard_id} and
+     * {@code shard_count} are added too. Those values are not supported by all sites!
      *
      * <p>If you use this on a sharded bot, better use {@link #postGuilds(ShardManager, BotBlockAPI)}.
      *
      * @param  jda
-     *         The {@link net.dv8tion.jda.core.JDA JDA instance} that should be used.
+     *         The {@link net.dv8tion.jda.api.JDA JDA instance} that should be used.
      * @param  botBlockAPI
      *         The {@link com.andre601.javabotblockapi.BotBlockAPI BotBlockAPI instance} that should be used.
      *
@@ -109,13 +113,13 @@ public class RequestHandler {
         json.put("server_count", jda.getGuildCache().size())
                 .put("bot_id", id);
 
-        if(jda.getShardInfo() != null)
+        if(jda.getShardInfo().getShardTotal() > 1)
             json.put("shard_id", jda.getShardInfo().getShardId())
                     .put("shard_count", jda.getShardInfo().getShardTotal());
 
         botBlockAPI.getAuthTokens().forEach(json::put);
 
-        performRequest();
+        postRequest();
     }
 
     /**
@@ -161,20 +165,25 @@ public class RequestHandler {
      * @see #postGuilds(JDA, BotBlockAPI) postGuilds(JDA, BotBlockAPI) for posting with JDA.
      */
     public void postGuilds(@NotNull String botId, int guilds, @NotNull BotBlockAPI botBlockAPI) throws IOException, RatelimitedException{
+        if(ObjectUtils.isEmpty(botId))
+            throw new NullPointerException("botId may not be empty!");
+
+        this.id = botId;
+
         json.put("server_count", guilds)
                 .put("bot_id", botId);
 
         botBlockAPI.getAuthTokens().forEach(json::put);
 
-        performRequest();
+        postRequest();
     }
 
     /**
-     * Starts a scheduler that posts the guilds from the provided {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager}
+     * Starts a scheduler that posts the guilds from the provided {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager}
      * every X minutes.
      *
      * @param shardManager
-     *         The {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager instance} that should be used.
+     *         The {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager instance} that should be used.
      * @param  botBlockAPI
      *         The {@link com.andre601.javabotblockapi.BotBlockAPI BotBlockAPI instance} that should be used.
      *
@@ -191,11 +200,11 @@ public class RequestHandler {
     }
 
     /**
-     * Starts a scheduler that posts the guilds from the provided {@link net.dv8tion.jda.core.JDA JDA}
+     * Starts a scheduler that posts the guilds from the provided {@link net.dv8tion.jda.api.JDA JDA}
      * every X minutes.
      *
      * @param jda
-     *         The {@link net.dv8tion.jda.core.JDA JDA instance} that should be used.
+     *         The {@link net.dv8tion.jda.api.JDA JDA instance} that should be used.
      * @param  botBlockAPI
      *         The {@link com.andre601.javabotblockapi.BotBlockAPI BotBlockAPI instance} that should be used.
      *
@@ -258,15 +267,18 @@ public class RequestHandler {
     }
 
     /**
-     * Shuts down the scheduler.
+     * Stops the auto-posting by shutting down the scheduler.
      */
     public void stopAutoPosting(){
         scheduler.shutdown();
     }
 
-    private void performRequest() throws IOException, RatelimitedException{
+    private void postRequest() throws IOException, RatelimitedException{
         Objects.requireNonNull(json, "JSON may not be null.");
         Objects.requireNonNull(id, "Id may not be null.");
+
+        if(ObjectUtils.isEmpty(id))
+            throw new NullPointerException("botId may not be empty!");
 
         RequestBody body = RequestBody.create(null, json.toString());
         Request request = new Request.Builder()
@@ -298,8 +310,8 @@ public class RequestHandler {
                 JSONObject failure = json.getJSONObject("failure");
 
                 List<String> sites = new ArrayList<>();
-                for (String key : failure.keySet()) {
-                    try {
+                for(String key : failure.keySet()){
+                    try{
                         JSONArray array = failure.getJSONArray(key);
                         sites.add(String.format(
                                 "Name: %s, Error code: %d, Error Message: %s",
@@ -307,7 +319,7 @@ public class RequestHandler {
                                 array.getInt(0),
                                 array.getString(1)
                         ));
-                    } catch (JSONException ex) {
+                    }catch (JSONException ex){
                         Map<String, Object> notFound = failure.toMap();
                         sites.add("Errors: " + notFound.toString());
                     }

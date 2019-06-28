@@ -29,14 +29,30 @@ import java.util.Map;
  * {@link com.andre601.javabotblockapi.RequestHandler RequestHandler}.
  */
 public class BotBlockAPI{
+    private static final int DEFAULT_DELAY = 30;
+
     private Map<String, String> authTokens;
     private int updateInterval;
+
+    /**
+     * Constructor to set the Map with the sites and tokens.
+     * <br>This will also set the update interval to 30 minutes.
+     *
+     * @param authTokens
+     *        A Map of sites and their tokens. May not be null.
+     *        <br>You may receive the API-token from your botlist.
+     */
+    public BotBlockAPI(@NotNull Map<String, String> authTokens){
+        this.authTokens = authTokens;
+        this.updateInterval = DEFAULT_DELAY;
+    }
 
     /**
      * Creates an instance of BotBlockAPI with the provided api tokens (as Map) and update interval.
      *
      * @param authTokens
      *        A Map of sites and their tokens. May not be null.
+     *        <br>You may receive the API-token from your botlist.
      * @param updateInterval
      *        The update interval to set.
      */
@@ -58,7 +74,7 @@ public class BotBlockAPI{
      */
     public static class Builder{
         private Map<String, String> authTokens = new HashMap<>();
-        private int updateInterval = 30;
+        private int updateInterval = DEFAULT_DELAY;
 
         /**
          * Empty constructor to get the class.
@@ -67,13 +83,14 @@ public class BotBlockAPI{
 
         /**
          * Adds the provided Site name and token to the Map.
-         * <br>If there is already an entry with the same key, it will be overwritten.
+         * <br>Entries with the same key will be overwritten.
          *
          * @param  site
          *         The name of the site. May not be null.
          *         <br>A list of supported sites can be found <a href="https://botblock.org/api/docs#count" target="_blank">here</a>.
          * @param  token
          *         The API token you get from the corresponding botlist. May not be null.
+         *         <br>You may receive the API-token from your botlist.
          *
          * @throws NullPointerException
          *         When either the site or token are empty ({@code ""}).
