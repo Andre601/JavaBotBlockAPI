@@ -44,6 +44,8 @@ public class RequestHandler {
     private ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
     private final OkHttpClient CLIENT = new OkHttpClient();
 
+    private String baseUrl = "https://botblock.org/api/";
+
     private String id = null;
 
     private JSONObject json = new JSONObject();
@@ -67,8 +69,6 @@ public class RequestHandler {
      *         When the Bot (IP or ID) got ratelimited.
      * @throws NullPointerException
      *         When the ShardManager gives an invalid shard (Shard id 0 is null).
-     *
-     * @see #postGuilds(JDA, BotBlockAPI) postGuilds(JDA, BotBlockAPI) for posting with JDA.
      */
     public void postGuilds(@NotNull ShardManager shardManager, @NotNull BotBlockAPI botBlockAPI) throws IOException, RatelimitedException{
         this.id = Objects.requireNonNull(shardManager.getShardById(0), "The provided ShardManager had an invalid Shard ID.").getSelfUser().getId();
@@ -104,8 +104,6 @@ public class RequestHandler {
      *         When the post request couldn't be performed properly.
      * @throws RatelimitedException
      *         When the Bot (IP or ID) got ratelimited.
-     *
-     * @see #postGuilds(ShardManager, BotBlockAPI) postGuilds(ShardManager, BotBlockAPI) for posting with ShardManager.
      */
     public void postGuilds(@NotNull JDA jda, @NotNull BotBlockAPI botBlockAPI) throws IOException, RatelimitedException{
         this.id = jda.getSelfUser().getId();
@@ -137,10 +135,6 @@ public class RequestHandler {
      *         When the post request couldn't be performed properly.
      * @throws RatelimitedException
      *         When the Bot (IP or ID) got ratelimited.
-     *
-     * @see #postGuilds(String, int, BotBlockAPI) postGuilds(String, int, BotBlockAPI) for the full method.
-     * @see #postGuilds(ShardManager, BotBlockAPI) postGuilds(ShardManager, BotBlockAPI) for posting with ShardManager.
-     * @see #postGuilds(JDA, BotBlockAPI) postGuilds(JDA, BotBlockAPI) for posting with JDA.
      */
     public void postGuilds(Long botId, int guilds, @NotNull BotBlockAPI botBlockAPI) throws IOException, RatelimitedException{
         postGuilds(Long.toString(botId), guilds, botBlockAPI);
@@ -160,9 +154,6 @@ public class RequestHandler {
      *         When the post request couldn't be performed properly.
      * @throws RatelimitedException
      *         When the Bot (IP or ID) got ratelimited.
-     *
-     * @see #postGuilds(ShardManager, BotBlockAPI) postGuilds(ShardManager, BotBlockAPI) for posting with ShardManager.
-     * @see #postGuilds(JDA, BotBlockAPI) postGuilds(JDA, BotBlockAPI) for posting with JDA.
      */
     public void postGuilds(@NotNull String botId, int guilds, @NotNull BotBlockAPI botBlockAPI) throws IOException, RatelimitedException{
         if(ObjectUtils.isEmpty(botId))
@@ -186,8 +177,6 @@ public class RequestHandler {
      *         The {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager instance} that should be used.
      * @param  botBlockAPI
      *         The {@link com.andre601.javabotblockapi.BotBlockAPI BotBlockAPI instance} that should be used.
-     *
-     * @see #startAutoPosting(JDA, BotBlockAPI) startAutoPosting(JDA, BotBlockAPI) for posting with JDA.
      */
     public void startAutoPosting(@NotNull ShardManager shardManager, @NotNull BotBlockAPI botBlockAPI){
         scheduler.scheduleAtFixedRate(() -> {
@@ -207,8 +196,6 @@ public class RequestHandler {
      *         The {@link net.dv8tion.jda.api.JDA JDA instance} that should be used.
      * @param  botBlockAPI
      *         The {@link com.andre601.javabotblockapi.BotBlockAPI BotBlockAPI instance} that should be used.
-     *
-     * @see #startAutoPosting(ShardManager, BotBlockAPI) startAutoPosting(ShardManager, BotBlockAPI) for posting with ShardManager.
      */
     public void startAutoPosting(@NotNull JDA jda, @NotNull BotBlockAPI botBlockAPI){
         scheduler.scheduleAtFixedRate(() -> {
@@ -229,9 +216,6 @@ public class RequestHandler {
      *         The guilds the bot is in.
      * @param  botBlockAPI
      *         The {@link com.andre601.javabotblockapi.BotBlockAPI BotBlockAPI instance} that should be used.
-     *
-     * @see #startAutoPosting(JDA, BotBlockAPI) startAutoPosting(JDA, BotBlockAPI) for posting with JDA.
-     * @see #startAutoPosting(ShardManager, BotBlockAPI) startAutoPosting(ShardManager, BotBlockAPI) for posting with ShardManager.
      */
     public void startAutoPosting(Long botId, int guilds, @NotNull BotBlockAPI botBlockAPI){
         scheduler.scheduleAtFixedRate(() -> {
@@ -252,9 +236,6 @@ public class RequestHandler {
      *         The guilds the bot is in.
      * @param  botBlockAPI
      *         The {@link com.andre601.javabotblockapi.BotBlockAPI BotBlockAPI instance} that should be used.
-     *
-     * @see #startAutoPosting(JDA, BotBlockAPI) startAutoPosting(JDA, BotBlockAPI) for posting with JDA.
-     * @see #startAutoPosting(ShardManager, BotBlockAPI) startAutoPosting(ShardManager, BotBlockAPI) for posting with ShardManager.
      */
     public void startAutoPosting(@NotNull String botId, int guilds, @NotNull BotBlockAPI botBlockAPI){
         scheduler.scheduleAtFixedRate(() -> {
@@ -280,9 +261,11 @@ public class RequestHandler {
         if(ObjectUtils.isEmpty(id))
             throw new NullPointerException("botId may not be empty!");
 
+        String url = baseUrl + "count";
+
         RequestBody body = RequestBody.create(null, json.toString());
         Request request = new Request.Builder()
-                .url("https://botblock.org/api/count")
+                .url(url)
                 .addHeader("User-Agent", id)
                 .addHeader("Content-Type", "application/json") // Some sites require this in the header.
                 .post(body)
@@ -330,6 +313,339 @@ public class RequestHandler {
                         String.join(", ", sites)
                 ));
             }
+        }
+    }
+
+    /**
+     * Gets the owners of a bot as a list.
+     * <br>This method calls {@link com.andre601.javabotblockapi.RequestHandler#getAll(String) getOwners(String)}.
+     *
+     * @param  shardManager
+     *         The {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager instance} that should be used.
+     *
+     * @return The owners as a list.
+     *
+     * @throws IOException
+     *         When the request couldn't be performed properly.
+     * @throws RatelimitedException
+     *         When the API gets ratelimited.
+     *
+     * @see #getOwners(String) getOwners(String)
+     */
+    public List<String> getOwners(@NotNull ShardManager shardManager) throws IOException, RatelimitedException{
+        return getOwners(shardManager.getShardById(0).getSelfUser().getId());
+    }
+
+
+    /**
+     * Gets the owners of a bot as a list.
+     * <br>This method calls {@link com.andre601.javabotblockapi.RequestHandler#getAll(String) getOwners(String)}.
+     *
+     * @param  jda
+     *         The {@link net.dv8tion.jda.api.JDA JDA instance} that should be used.
+     *
+     * @return The owners as a list.
+     *
+     * @throws IOException
+     *         When the request couldn't be performed properly.
+     * @throws RatelimitedException
+     *         When the API gets ratelimited.
+     *
+     * @see #getOwners(String) getOwners(String)
+     */
+    public List<String> getOwners(@NotNull JDA jda) throws IOException, RatelimitedException{
+        return getOwners(jda.getSelfUser().getId());
+    }
+
+    /**
+     * Gets the owners of a bot as a List.
+     *
+     * @param  id
+     *         The ID of the bot to get information from.
+     *
+     * @return The owners as a list.
+     *
+     * @throws IOException
+     *         When the post request couldn't be performed properly.
+     * @throws RatelimitedException
+     *         When the Bot (IP or ID) got ratelimited.
+     */
+    public List<String> getOwners(@NotNull String id) throws IOException, RatelimitedException{
+        JSONObject json = getAll(id);
+
+        JSONArray array = json.getJSONArray("owners");
+
+        List<String> owners = new ArrayList<>();
+        for(int i = 0; i < array.length(); i++)
+            owners.add(array.getString(0));
+
+        return owners;
+    }
+
+    /**
+     * Gets all the available Botlists as JSONObject.
+     * <br>This method calls {@link com.andre601.javabotblockapi.RequestHandler#getBotlists(String) getBotlists(String)}.
+     *
+     * <p>The JSONObject will look something like this:
+     * <br><pre>{@code
+     * {
+     *   "somebotlist.com": [
+     *     <botlist data>,
+     *     200
+     *   ],
+     *   "otherlist.org": [
+     *     <botlist data>,
+     *     404
+     *   ]
+     * }
+     * }</pre>
+     *
+     * @param  shardManager
+     *         The {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager instance} that should be used.
+     *
+     * @return The Botlists as JSONObject.
+     *
+     * @throws IOException
+     *         When the request couldn't be performed properly.
+     * @throws RatelimitedException
+     *         When the API gets ratelimited.
+     *
+     * @see #getBotlists(String) getBotlists(String)
+     */
+    public JSONObject getBotlists(@NotNull ShardManager shardManager) throws IOException, RatelimitedException{
+        return getBotlists(shardManager.getShardById(0).getSelfUser().getId());
+    }
+
+
+    /**
+     * Gets all the available Botlists as JSONObject.
+     * <br>This method calls {@link com.andre601.javabotblockapi.RequestHandler#getBotlists(String) getBotlists(String)}.
+     *
+     * <p>The JSONObject will look something like this:
+     * <br><pre>{@code
+     * {
+     *   "somebotlist.com": [
+     *     <botlist data>,
+     *     200
+     *   ],
+     *   "otherlist.org": [
+     *     <botlist data>,
+     *     404
+     *   ]
+     * }
+     * }</pre>
+     *
+     * @param  jda
+     *         The {@link net.dv8tion.jda.api.JDA jda instance} that should be used.
+     *
+     * @return The Botlists as JSONObject.
+     *
+     * @throws IOException
+     *         When the request couldn't be performed properly.
+     * @throws RatelimitedException
+     *         When the API gets ratelimited.
+     *
+     * @see #getBotlists(String) getBotlists(String)
+     */
+    public JSONObject getBotlists(@NotNull JDA jda) throws IOException, RatelimitedException{
+        return getBotlists(jda.getSelfUser().getId());
+    }
+
+
+    /**
+     * Gets all the available Botlists as JSONObject.
+     *
+     * <p>The JSONObject will look something like this:
+     * <br><pre>{@code
+     * {
+     *   "somebotlist.com": [
+     *     <botlist data>,
+     *     200
+     *   ],
+     *   "otherlist.org": [
+     *     <botlist data>,
+     *     404
+     *   ]
+     * }
+     * }</pre>
+     *
+     * @param  id
+     *         The id of the bot
+     *
+     * @return The Botlists as JSONObject.
+     *
+     * @throws IOException
+     *         When the request couldn't be performed properly.
+     * @throws RatelimitedException
+     *         When the API gets ratelimited.
+     */
+    public JSONObject getBotlists(@NotNull String id) throws IOException, RatelimitedException{
+        return getAll(id).getJSONObject("list_data");
+    }
+
+    /**
+     * Gets a specific botlist-information as JSONArray.
+     *
+     * <p>The JSONObject will look something like this:
+     * <br><pre>{@code
+     * {[
+     *   <botlist data>,
+     *   200
+     * ]}
+     * }</pre>
+     *
+     * @param  shardManager
+     *         The {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager instance} that should be used.
+     * @param  site
+     *         The sites name to get information from.
+     *         <br>A list of supported sites can be found <a href="https://botblock.org/api/docs#count" target="_blank">here</a>.
+     *
+     * @return The sites information as JSONArray.
+     *
+     * @throws IOException
+     *         When the request couldn't be performed properly.
+     * @throws RatelimitedException
+     *         When the API gets ratelimited.
+     *
+     * @see #getBotlist(String, String) getBotlist(String, String)
+     */
+    public JSONArray getBotlist(@NotNull ShardManager shardManager, @NotNull String site) throws IOException, RatelimitedException{
+        return getBotlist(shardManager.getShardById(0).getSelfUser().getId(), site);
+    }
+
+    /**
+     * Gets a specific botlist-information as JSONArray.
+     *
+     * <p>The JSONObject will look something like this:
+     * <br><pre>{@code
+     * {[
+     *   <botlist data>,
+     *   200
+     * ]}
+     * }</pre>
+     *
+     * @param  jda
+     *         The {@link net.dv8tion.jda.api.JDA JDA instance} that should be used.
+     * @param  site
+     *         The sites name to get information from.
+     *         <br>A list of supported sites can be found <a href="https://botblock.org/api/docs#count" target="_blank">here</a>.
+     *
+     * @return The sites information as JSONArray.
+     *
+     * @throws IOException
+     *         When the request couldn't be performed properly.
+     * @throws RatelimitedException
+     *         When the API gets ratelimited.
+     *
+     * @see #getBotlist(String, String) getBotlist(String, String)
+     */
+    public JSONArray getBotlist(@NotNull JDA jda, String site) throws IOException, RatelimitedException{
+        return getBotlist(jda.getSelfUser().getId(), site);
+    }
+
+    /**
+     * Gets a specific botlist-information as JSONArray.
+     *
+     * <p>The JSONObject will look something like this:
+     * <br><pre>{@code
+     * {[
+     *   <botlist data>,
+     *   200
+     * ]}
+     * }</pre>
+     *
+     * @param  id
+     *         The id of the bot.
+     * @param  site
+     *         The sites name to get information from.
+     *         <br>A list of supported sites can be found <a href="https://botblock.org/api/docs#count" target="_blank">here</a>.
+     *
+     * @return The sites information as JSONArray.
+     *
+     * @throws IOException
+     *         When the request couldn't be performed properly.
+     * @throws RatelimitedException
+     *         When the API gets ratelimited.
+     */
+    public JSONArray getBotlist(@NotNull String id, @NotNull String site) throws IOException, RatelimitedException{
+        return getAll(id).getJSONObject("list_data").getJSONArray(site);
+    }
+
+    /**
+     * Gets the basic information of a bot including id, name, discriminator, {@link #getOwners(ShardManager) owners},
+     * server_count and OAuth-link but also all sites and corresponding informations of those.
+     * <br>With exception of id and the sites are the other informations based on the most common response.
+     *
+     * <p>A response could look like this:
+     * <br><pre>{@code
+     * {
+     *     "id": "123456789012345678",
+     *     "usernam": "MyBot",
+     *     "discriminator": "1234",
+     *     "owners": [
+     *         "234567890123456789"
+     *     ],
+     *     "server_count": 100,
+     *     "invite": "https://discordapp.com/oauth2/authorize?client_id=123456789012345678&scope=bot",
+     *     "list_data": {
+     *         "somebotlist.com": [
+     *             <list data>,
+     *             200
+     *         ],
+     *         "otherlist.org": [
+     *             <list data>,
+     *             404
+     *         ]
+     *     }
+     * }
+     * }</pre>
+     *
+     * @param  id
+     *         The id of the bot.
+     *
+     * @return The Bot information as JSONObject.
+     *
+     * @throws IOException
+     *         When the request couldn't be performed properly.
+     * @throws RatelimitedException
+     *         When the API gets ratelimited.
+     *
+     * @see #getOwners(ShardManager) getOwners(ShardManager)
+     * @see #getOwners(JDA) getOwners(JDA)
+     * @see #getOwners(String) getOwners(String)
+     * @see #getBotlists(ShardManager) getBotlists(ShardManager)
+     * @see #getBotlists(JDA) getBotlists(JDA)
+     * @see #getBotlists(String) getBotlists(String)
+     * @see #getBotlist(ShardManager, String) getBotlist(ShardManager, String)
+     * @see #getBotlist(JDA, String) getBotlist(JDA, String)
+     * @see #getBotlist(String, String) getBotlist(String, String)
+     */
+    public JSONObject getAll(@NotNull String id) throws IOException, RatelimitedException{
+        String url = baseUrl + "bots/" + id;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("User-Agent", id)
+                .build();
+
+        try(Response response = CLIENT.newCall(request).execute()){
+            Objects.requireNonNull(response.body(), "Received empty body from BotBlocks API.");
+
+            if(response.body().string().isEmpty())
+                throw new NullPointerException("Received empty body from BotBlocks API.");
+
+            if(!response.isSuccessful()){
+                if(response.code() == 429)
+                    throw new RatelimitedException(response.body().string());
+
+                throw new IOException(String.format(
+                        "Couldn't get Bot information. Site responded with %d (%s)",
+                        response.code(),
+                        response.message()
+                ));
+            }
+
+            return new JSONObject(response.body().string());
         }
     }
 }
