@@ -99,11 +99,11 @@ handler.postGuilds(jda, api);
 ```
 
 ### Getting botinfo
-JavaBotBlockAPI allows you to receive informations.
-There aren't that many methods to use due to the nature of the sites returning different informations.
+JavaBotBlockAPI allows you to receive different information of a certain bot.  
+What the sites returns can be completely different. There are only methods to receive general informations.  
 
 #### Receive full JSON
-You can use the `getAll(...)` method to receive the full JSON of the BotBlock API.
+You can use the `getAll(...)` method to receive the full JSON of the BotBlock API.  
 ```java
 // We need to get an instance of RequestHandler to use the methods.
 RequestHandler handler = new RequestHandler();
@@ -113,7 +113,7 @@ JSONObject json = handler.getAll(jda);
 ```
 
 #### Receive Owners
-You can use `getOwners(...)` to receive a List of all owners of the bot.
+You can use `getOwners(...)` to receive a List of all owners of the bot.  
 ```java
 // We need to get an instance of RequestHandler to use the methods.
 RequestHandler handler = new RequestHandler();
@@ -123,8 +123,8 @@ List<String> owners = handler.getOwners(jda);
 ```
 
 #### Receive all botlists.
-If you only want the Botlists and their information, use `getBotlists(...)`.
-It is returned as a JSONObject.
+If you only want the Botlists and their information, use `getBotlists(...)`.  
+It is returned as a JSONObject.  
 ```java
 // We need to get an instance of RequestHandler to use the methods.
 RequestHandler handler = new RequestHandler();
@@ -134,8 +134,8 @@ JSONObject json = handler.getBotlists(jda);
 ```
 
 #### Receive certain Botlist info
-You can use `getBotlist(..., String)` to get the information of a specific botlist.
-The information you receive is given as JSONArray and depends on what the botlist returns.
+You can use `getBotlist(..., String)` to get the information of a specific botlist.  
+The information you receive is given as JSONArray and depends on what the botlist returns.  
 ```java
 // We need to get an instance of RequestHandler to use the methods.
 RequestHandler handler = new RequestHandler();
