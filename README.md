@@ -98,6 +98,52 @@ RequestHandler handler = new RequestHandler();
 handler.postGuilds(jda, api);
 ```
 
+### Getting botinfo
+JavaBotBlockAPI allows you to receive informations.
+There aren't that many methods to use due to the nature of the sites returning different informations.
+
+#### Receive full JSON
+You can use the `getAll(...)` method to receive the full JSON of the BotBlock API.
+```java
+// We need to get an instance of RequestHandler to use the methods.
+RequestHandler handler = new RequestHandler();
+
+// Like with all other methods can you use JDA, ShardManager or ID.
+JSONObject json = handler.getAll(jda);
+```
+
+#### Receive Owners
+You can use `getOwners(...)` to receive a List of all owners of the bot.
+```java
+// We need to get an instance of RequestHandler to use the methods.
+RequestHandler handler = new RequestHandler();
+
+// Like with all other methods can you use JDA, ShardManager or ID.
+List<String> owners = handler.getOwners(jda);
+```
+
+#### Receive all botlists.
+If you only want the Botlists and their information, use `getBotlists(...)`.
+It is returned as a JSONObject.
+```java
+// We need to get an instance of RequestHandler to use the methods.
+RequestHandler handler = new RequestHandler();
+
+// Like with all other methods can you use JDA, ShardManager or ID.
+JSONObject json = handler.getBotlists(jda);
+```
+
+#### Receive certain Botlist info
+You can use `getBotlist(..., String)` to get the information of a specific botlist.
+The information you receive is given as JSONArray and depends on what the botlist returns.
+```java
+// We need to get an instance of RequestHandler to use the methods.
+RequestHandler handler = new RequestHandler();
+
+// Like with all other methods can you use JDA, ShardManager or ID.
+JSONArray array = handler.getBotlist(jda, "lbots.org");
+```
+
 ### Exceptions
 When you post the guild counts you could encounter certain Exceptions.  
 You can receive the following exceptions:
