@@ -405,7 +405,7 @@ public class RequestHandler {
 
         List<String> owners = new ArrayList<>();
         for(int i = 0; i < array.length(); i++)
-            owners.add(array.getString(0));
+            owners.add(array.getString(i));
 
         return owners;
     }
