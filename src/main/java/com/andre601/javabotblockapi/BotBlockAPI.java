@@ -18,14 +18,13 @@
  */
 package com.andre601.javabotblockapi;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Class for handling the sites to post to and the delay for the auto-post option in
+ * Class for handling the sites to post to and the delay for the auto-post option in the
  * {@link com.andre601.javabotblockapi.RequestHandler RequestHandler}.
  */
 public class BotBlockAPI{
@@ -48,7 +47,7 @@ public class BotBlockAPI{
     }
 
     /**
-     * Creates an instance of BotBlockAPI with the provided api tokens (as Map) and update interval.
+     * Constructor to set the Map with the sites and tokens and also the update delay..
      *
      * @param authTokens
      *        A Map of sites and their tokens. May not be null.
@@ -57,6 +56,9 @@ public class BotBlockAPI{
      *        The update interval to set.
      */
     public BotBlockAPI(@NotNull Map<String, String> authTokens, int updateInterval){
+        if(updateInterval < 2)
+            throw new IllegalArgumentException("Update interval may not be less than 2.");
+
         this.authTokens = authTokens;
         this.updateInterval = updateInterval;
     }
@@ -98,8 +100,8 @@ public class BotBlockAPI{
          * @return The Builder after the site and token were set. Useful for chaining.
          */
         public Builder addAuthToken(@NotNull String site, @NotNull String token){
-            if(ObjectUtils.isEmpty(site) || ObjectUtils.isEmpty(token))
-                throw new NullPointerException("Empty site and/or token is not allowed!");
+            Check.notEmpty(site, "Site may not be empty.");
+            Check.notEmpty(token, "Token may not be empty.");
 
             authTokens.put(site, token);
 
@@ -119,8 +121,7 @@ public class BotBlockAPI{
          * @return The Builder after the Map was set. Useful for chaining.
          */
         public Builder setAuthTokens(@NotNull Map<String, String> authTokens){
-            if(ObjectUtils.isEmpty(authTokens))
-                throw new NullPointerException("Empty Map for authTokens is not allowed!");
+            Check.notEmpty(authTokens, "AuthTokens may not be null.");
 
             this.authTokens = authTokens;
 
@@ -141,7 +142,7 @@ public class BotBlockAPI{
          */
         public Builder setUpdateInteval(int updateInterval){
             if(updateInterval < 2)
-                throw new IllegalArgumentException("updateInterval can't be less than 2!");
+                throw new IllegalArgumentException("Update interval may not be less than 2.");
 
             this.updateInterval = updateInterval;
 
