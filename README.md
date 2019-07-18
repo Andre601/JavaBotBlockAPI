@@ -9,17 +9,16 @@
 [BadgeDownload]: https://api.bintray.com/packages/andre601/maven/JavaBotBlockAPI/images/download.svg
 [Download]: https://bintray.com/andre601/maven/JavaBotBlockAPI/_latestVersion
 
-# JavaBotBlockAPI
 JavaBotBlockAPI is a continued and updated Java Wrapper for [BotBlock], a website that makes it possible to update guild counts on multiple lists with one API.  
 This wrapper is a fork of [BotBlock4J] and was updated and improved to make it as userfriendly as possible.
 
-## Installation
+# Installation
 [![BadgeDownload]][Download]
 
 You can install JavaBotBlockAPI through the following methods.  
 Make sure to replace `{version}` with the above shown version.
 
-### Gradle
+## Gradle
 Put this code into your `build.gradle`:  
 ```gradle
 repositories{
@@ -31,7 +30,7 @@ dependencies{
 }
 ```
 
-### Maven
+## Maven
 For maven use this code snipped:  
 ```xml
 <dependencies>
@@ -43,108 +42,158 @@ For maven use this code snipped:
 </dependencies>
 ```
 
-## Usage
+# Usage
 To use the Wrapper you have to follow these steps.
 
-### Notes
+## Notes
 In the below examples do I use a JDA instance called `jda`.  
 This will also work with ShardManager.
 
-### Creating a BotBlockAPI instance
-You first need to create an instance of the BotBlockAPI class.  
-This class is the center of everything, including on what sites you want to post your guild counts.
+## POST methods
+You can post you guild counts to the different Botlists using the BotBlock API.
 
-You can use the internal Builder class of BotBlockAPI to create an instance. It would look something like this:  
+### Creating an instance of BotBlockAPI
+For posting your guild counts towards the BotBlock API you first need to create an instance of the BotBlockAPI class.
+To do this it's recommended to use `BotBlockAPI.Builder()`.
+
+Here is an example of how it could look like.
 ```java
-// Creating an instance of BotBlockAPI using BotBlockAPI.Builder
 BotBlockAPI api = new BotBlockAPI.Builder()
-    .addAuthToken("lbots.org", "MySecretToken123") // Adds a site with the corresponding API token.
-    .addAuthToken("botlist.space", "MySecretToken456") // The builder allows chaining of the methods.
+    .addAuthToken("lbots.org", "MySecretToken123")
+    .addAuthToken("botlist.space", "MySecretToken456")
     .build();
 ```
+Remember to use `.build();` at the end to create the class.
 
-#### Notes
-There are a lot of other methods that you can use. Head over to the [Wiki] for more information.
+### Auto Posting
+JavaBotBlockAPI allows you to post the guild counts automatically every X minutes.
+To do this, you first need to get an instance of the RequestHandler and then call `.startAutoPosting(...)`.
 
-### Posting
-You can post the guilds either automatically or manually depending on your own preferences.
-
-#### Auto-posting
-JavaBotBlockAPI comes with an inbuilt scheduler to post your guilds automatically.
-To use it simply use the `startAutoPosting` method and provide either a JDA instance, ShardManager instance or the bot id and guild count.
-
-**Example**:  
+Here is an example:
 ```java
-// We need to get an instance of RequestHandler to use the methods.
 RequestHandler handler = new RequestHandler();
 
-// jda is a JDA instance and api a BotBlockAPI instance.
+// api is the instance of the BotBlockAPI
 handler.startAutoPosting(jda, api);
 ```
+The delay in which you post the guild counts is set through the `.setUpdateInterval(int)` method in the BotBlockAPI.Builder().
 
-But what if you want to stop it?  
-For that just call the `stopAutoPosting` method:  
-```
-handler.stopAutoPosting();
-```
+### Cancel auto posting
+To cancel the auto posting just call `.stopAutoPosting();` in the RequestHandler and it should cancel the scheduler.
 
-#### Manual posting
-If you want to post the guild counts manually you can use the `postGuilds` method.  
+### Manually posting
+There are methods that allow you to post the guild counts manually.
+To Post your guild counts, just call the `.postGuilds(..., ...)` method in the RequestHandler.
+
 ```java
-// We need to get an instance of RequestHandler to use the methods.
 RequestHandler handler = new RequestHandler();
 
-// jda is a JDA instance and api a BotBlockAPI instance.
+// api is the instance of the BotBlockAPI
 handler.postGuilds(jda, api);
 ```
 
-### Getting botinfo
-JavaBotBlockAPI allows you to receive different information of a certain bot.  
-What the sites returns can be completely different. There are only methods to receive general informations.  
+## GET methods
+Since version 2.0.0 of JavaBotBlockAPI can you get certain informations of a bot or the available Botlists on the BotBlock API.
 
-#### Receive full JSON
-You can use the `getAll(...)` method to receive the full JSON of the BotBlock API.  
-```java
-// We need to get an instance of RequestHandler to use the methods.
-RequestHandler handler = new RequestHandler();
+### All available Botlists
+You can call `.getBotlists()` to receive a JSONObject with all available Botlists in the BotBlockAPI.
 
-// Like with all other methods can you use JDA, ShardManager or ID.
-JSONObject json = handler.getAll(jda);
+The returned JSONObject could look like this:
+```json
+{
+    "botlist.space": {
+        "api_docs": "https://docs.botlist.space",
+        "api_post": "https://api.botlist.space/v1/bots/:id",
+        "api_field": "server_count",
+        "api_shard_id": null,
+        "api_shard_count": null,
+        "api_shards": "shards",
+        "api_get": "https://api.botlist.space/v1/bots/:id"
+    },
+    "lbots.org": {
+        "api_docs": "https://lbots.org/api/docs",
+        "api_post": "https://lbots.org/api/v1/bots/:id/stats",
+        "api_field": "guild_count",
+        "api_shard_id": "shard_id",
+        "api_shard_count": "shard_count",
+        "api_shards": null,
+        "api_get": null
+    }
+}
 ```
 
-#### Receive Owners
-You can use `getOwners(...)` to receive a List of all owners of the bot.  
-```java
-// We need to get an instance of RequestHandler to use the methods.
-RequestHandler handler = new RequestHandler();
-
-// Like with all other methods can you use JDA, ShardManager or ID.
-List<String> owners = handler.getOwners(jda);
+### Single Botlist
+Calling `.getBotlist(String)` returns a specific Botlist as JSONObject.
+For example does `.getBotlist("lbots.org")` return the following JSONObject:
+```json
+{
+    "api_docs": "https://lbots.org/api/docs",
+    "api_post": "https://lbots.org/api/v1/bots/:id/stats",
+    "api_field": "guild_count",
+    "api_shard_id": "shard_id",
+    "api_shard_count": "shard_count",
+    "api_shards": null,
+    "api_get": null
+}
 ```
 
-#### Receive all botlists.
-If you only want the Botlists and their information, use `getBotlists(...)`.  
-It is returned as a JSONObject.  
-```java
-// We need to get an instance of RequestHandler to use the methods.
-RequestHandler handler = new RequestHandler();
+### Complete Botinfo
+Calling `.getAll(...)` returns a JSONObject from all the botlists and with some general information.
 
-// Like with all other methods can you use JDA, ShardManager or ID.
-JSONObject json = handler.getBotlists(jda);
+The JSONObject can look like this:
+```json
+{
+    "id": "123456789012345678",
+    "name": "MyBot",
+    "discriminator": "1234",
+    "owners": [
+        "234567890123456789"
+    ],
+    "server_count": 100,
+    "invite": "https://discordapp.com/oauth2/authorize?client_id=123456789012345678&scope=bot",
+    "list_data": {
+        "botlist.space": [
+            <data>,
+            200
+        ],
+        "lbots.org": [
+            <data>,
+            404
+        ]
+    }
+}
 ```
 
-#### Receive certain Botlist info
-You can use `getBotlist(..., String)` to get the information of a specific botlist.  
-The information you receive is given as JSONArray and depends on what the botlist returns.  
-```java
-// We need to get an instance of RequestHandler to use the methods.
-RequestHandler handler = new RequestHandler();
+`<data>` is the JSON that is returned by the provided Botlist meaning it's different for each site.
+`name`, `owners`, `server_count` and `invite` is based on the most common appearances of the data.
 
-// Like with all other methods can you use JDA, ShardManager or ID.
-JSONArray array = handler.getBotlist(jda, "lbots.org");
+### Botinfo from all Botlists
+You can call `.getBotInfos(...)` to only receive the bot info from all the Botlists.
+
+The returned JSONObject can look like this:
+```json
+{
+    "botlist.space": [
+        <data>,
+        200
+    ],
+    "lbots.org": [
+        <data>,
+        404
+    ]
+}
 ```
+`<data>` is the JSON that is returned by the provided Botlist meaning it's different for each site.
 
-### Exceptions
+### Botinfo of a single site
+With `.getBotInfo(..., String)` can you receive the info of a specific site.
+The returned data depends on the selected site and can be different for each one.
+
+### Owners
+You can call `.getOwners(...)` to get the owners of a Bot from all the Botlists.
+The info is returned as JSONArray and is based on how often the info is provided by the botlists.
+
+## Exceptions
 When you post the guild counts you could encounter certain Exceptions.  
 You can receive the following exceptions:
 - `IOException`  
@@ -155,7 +204,7 @@ This shouldn't be the case with auto-posting since it has a minimum delay of 1 m
 - `NullPointerException`  
 Thrown when BotBlock.org sends an empty response, meaning something got messed up on their side.
 
-## Links
+# Links
 Here are some useful links:
 - [BotBlock.org][BotBlock] Site for which this wrapper was made.
   - [API] API documentation.
