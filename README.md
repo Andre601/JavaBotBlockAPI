@@ -53,36 +53,36 @@ This will also work with ShardManager.
 You can post you guild counts to the different Botlists using the BotBlock API.
 
 ### Creating an instance of BotBlockAPI
-For posting your guild counts towards the BotBlock API you first need to create an instance of the BotBlockAPI class.
+For posting your guild counts towards the BotBlock API you first need to create an instance of the BotBlockAPI class.  
 To do this it's recommended to use `BotBlockAPI.Builder()`.
 
-Here is an example of how it could look like.
+Here is an example of how it could look like.  
 ```java
 BotBlockAPI api = new BotBlockAPI.Builder()
     .addAuthToken("lbots.org", "MySecretToken123")
     .addAuthToken("botlist.space", "MySecretToken456")
     .build();
-```
+```  
 Remember to use `.build();` at the end to create the class.
 
 ### Auto Posting
-JavaBotBlockAPI allows you to post the guild counts automatically every X minutes.
+JavaBotBlockAPI allows you to post the guild counts automatically every X minutes.  
 To do this, you first need to get an instance of the RequestHandler and then call `.startAutoPosting(...)`.
 
-Here is an example:
+Here is an example:  
 ```java
 RequestHandler handler = new RequestHandler();
 
 // api is the instance of the BotBlockAPI
 handler.startAutoPosting(jda, api);
-```
+```  
 The delay in which you post the guild counts is set through the `.setUpdateInterval(int)` method in the BotBlockAPI.Builder().
 
 ### Cancel auto posting
 To cancel the auto posting just call `.stopAutoPosting();` in the RequestHandler and it should cancel the scheduler.
 
 ### Manually posting
-There are methods that allow you to post the guild counts manually.
+There are methods that allow you to post the guild counts manually.  
 To Post your guild counts, just call the `.postGuilds(..., ...)` method in the RequestHandler.
 
 ```java
@@ -98,7 +98,7 @@ Since version 2.0.0 of JavaBotBlockAPI can you get certain informations of a bot
 ### All available Botlists
 You can call `.getBotlists()` to receive a JSONObject with all available Botlists in the BotBlockAPI.
 
-The returned JSONObject could look like this:
+The returned JSONObject could look like this:  
 ```json
 {
     "botlist.space": {
@@ -123,8 +123,8 @@ The returned JSONObject could look like this:
 ```
 
 ### Single Botlist
-Calling `.getBotlist(String)` returns a specific Botlist as JSONObject.
-For example does `.getBotlist("lbots.org")` return the following JSONObject:
+Calling `.getBotlist(String)` returns a specific Botlist as JSONObject.  
+For example does `.getBotlist("lbots.org")` return the following JSONObject:  
 ```json
 {
     "api_docs": "https://lbots.org/api/docs",
@@ -140,7 +140,7 @@ For example does `.getBotlist("lbots.org")` return the following JSONObject:
 ### Complete Botinfo
 Calling `.getAll(...)` returns a JSONObject from all the botlists and with some general information.
 
-The JSONObject can look like this:
+The JSONObject can look like this:  
 ```json
 {
     "id": "123456789012345678",
@@ -162,15 +162,14 @@ The JSONObject can look like this:
         ]
     }
 }
-```
-
-`<data>` is the JSON that is returned by the provided Botlist meaning it's different for each site.
+```  
+`<data>` is the JSON that is returned by the provided Botlist meaning it's different for each site.  
 `name`, `owners`, `server_count` and `invite` is based on the most common appearances of the data.
 
 ### Botinfo from all Botlists
 You can call `.getBotInfos(...)` to only receive the bot info from all the Botlists.
 
-The returned JSONObject can look like this:
+The returned JSONObject can look like this:  
 ```json
 {
     "botlist.space": [
@@ -182,15 +181,15 @@ The returned JSONObject can look like this:
         404
     ]
 }
-```
+```  
 `<data>` is the JSON that is returned by the provided Botlist meaning it's different for each site.
 
 ### Botinfo of a single site
-With `.getBotInfo(..., String)` can you receive the info of a specific site.
+With `.getBotInfo(..., String)` can you receive the info of a specific site.  
 The returned data depends on the selected site and can be different for each one.
 
 ### Owners
-You can call `.getOwners(...)` to get the owners of a Bot from all the Botlists.
+You can call `.getOwners(...)` to get the owners of a Bot from all the Botlists.  
 The info is returned as JSONArray and is based on how often the info is provided by the botlists.
 
 ## Exceptions
