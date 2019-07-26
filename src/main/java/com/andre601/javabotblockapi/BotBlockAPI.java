@@ -18,29 +18,47 @@
  */
 package com.andre601.javabotblockapi;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Class for handling the sites to post to and the delay for the auto-post option in
+ * Class for handling the sites to post to and the delay for the auto-post option in the
  * {@link com.andre601.javabotblockapi.RequestHandler RequestHandler}.
  */
 public class BotBlockAPI{
+    private static final int DEFAULT_DELAY = 30;
+
     private Map<String, String> authTokens;
     private int updateInterval;
 
     /**
-     * Creates an instance of BotBlockAPI with the provided api tokens (as Map) and update interval.
+     * Constructor to set the Map with the sites and tokens.
+     * <br>This will also set the update interval to 30 minutes.
      *
      * @param authTokens
      *        A Map of sites and their tokens. May not be null.
+     *        <br>You may receive the API-token from your botlist.
+     */
+    public BotBlockAPI(@NotNull Map<String, String> authTokens){
+        this.authTokens = authTokens;
+        this.updateInterval = DEFAULT_DELAY;
+    }
+
+    /**
+     * Constructor to set the Map with the sites and tokens and also the update delay..
+     *
+     * @param authTokens
+     *        A Map of sites and their tokens. May not be null.
+     *        <br>You may receive the API-token from your botlist.
      * @param updateInterval
      *        The update interval to set.
      */
     public BotBlockAPI(@NotNull Map<String, String> authTokens, int updateInterval){
+        if(updateInterval < 2)
+            throw new IllegalArgumentException("Update interval may not be less than 2.");
+
         this.authTokens = authTokens;
         this.updateInterval = updateInterval;
     }
@@ -58,7 +76,7 @@ public class BotBlockAPI{
      */
     public static class Builder{
         private Map<String, String> authTokens = new HashMap<>();
-        private int updateInterval = 30;
+        private int updateInterval = DEFAULT_DELAY;
 
         /**
          * Empty constructor to get the class.
@@ -67,13 +85,14 @@ public class BotBlockAPI{
 
         /**
          * Adds the provided Site name and token to the Map.
-         * <br>If there is already an entry with the same key, it will be overwritten.
+         * <br>Entries with the same key will be overwritten.
          *
          * @param  site
          *         The name of the site. May not be null.
          *         <br>A list of supported sites can be found <a href="https://botblock.org/api/docs#count" target="_blank">here</a>.
          * @param  token
          *         The API token you get from the corresponding botlist. May not be null.
+         *         <br>You may receive the API-token from your botlist.
          *
          * @throws NullPointerException
          *         When either the site or token are empty ({@code ""}).
@@ -81,8 +100,8 @@ public class BotBlockAPI{
          * @return The Builder after the site and token were set. Useful for chaining.
          */
         public Builder addAuthToken(@NotNull String site, @NotNull String token){
-            if(ObjectUtils.isEmpty(site) || ObjectUtils.isEmpty(token))
-                throw new NullPointerException("Empty site and/or token is not allowed!");
+            Check.notEmpty(site, "Site may not be empty.");
+            Check.notEmpty(token, "Token may not be empty.");
 
             authTokens.put(site, token);
 
@@ -102,8 +121,7 @@ public class BotBlockAPI{
          * @return The Builder after the Map was set. Useful for chaining.
          */
         public Builder setAuthTokens(@NotNull Map<String, String> authTokens){
-            if(ObjectUtils.isEmpty(authTokens))
-                throw new NullPointerException("Empty Map for authTokens is not allowed!");
+            Check.notEmpty(authTokens, "AuthTokens may not be null.");
 
             this.authTokens = authTokens;
 
@@ -124,7 +142,7 @@ public class BotBlockAPI{
          */
         public Builder setUpdateInteval(int updateInterval){
             if(updateInterval < 2)
-                throw new IllegalArgumentException("updateInterval can't be less than 2!");
+                throw new IllegalArgumentException("Update interval may not be less than 2.");
 
             this.updateInterval = updateInterval;
 
