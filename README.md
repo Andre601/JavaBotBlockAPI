@@ -9,10 +9,10 @@
 [BadgeDownload]: https://api.bintray.com/packages/andre601/maven/JavaBotBlockAPI/images/download.svg
 [Download]: https://bintray.com/andre601/maven/JavaBotBlockAPI/_latestVersion
 
-[JavaBotBlockAPI/JavaBotBlockAPI]: https://github.com/JavaBotBlockAPI/JavaBotBlockAPI
+[BotBlock/JavaBotBlockAPI]: https://github.com/BotBlock/JavaBotBlockAPI
 
 # This repository was moved
-You can find the new repository and its content under [JavaBotBlockAPI/JavaBotBlockAPI].  
+You can find the new repository and its content under [BotBlock/JavaBotBlockAPI].  
 This repository is archived and issues/pull requests towards it will be either moved or ignored.
 
 ----
